@@ -4,6 +4,7 @@
   "description": "tasks from RSSchool NodeJS Course 2024",
   "main": "index.js",
   "scripts": {
+    "start": "npx nodemon index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +16,13 @@
   "bugs": {
     "url": "https://github.com/Ilyxxxaa/nodeJS-course-2024/issues"
   },
-  "homepage": "https://github.com/Ilyxxxaa/nodeJS-course-2024#readme"
+  "homepage": "https://github.com/Ilyxxxaa/nodeJS-course-2024#readme",
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.1",
+    "nodemon": "^3.0.3",
+    "ts-node": "^10.9.2"
+  }
 }
