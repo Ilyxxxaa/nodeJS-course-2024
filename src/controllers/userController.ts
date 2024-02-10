@@ -1,35 +1,112 @@
 import { ServerResponse, IncomingMessage } from 'http';
-import { users } from '../users';
+
 import { getDataFormPOSTRequest } from '../utils/getDataFromPOSTRequest';
 import { User } from '../types';
 import { responseHandler } from '../utils/responseHandler';
-import { ErrorMessages } from '../constants';
+import { ErrorMessages, IDRegExp } from '../constants';
+import { randomUUID } from 'crypto';
 
 class UserController {
+  users: User[];
+
+  constructor() {
+    this.users = [];
+  }
+
   getUsers = (req: IncomingMessage, res: ServerResponse) => {
-    res.write(JSON.stringify(users));
-    res.end();
+    responseHandler(res, 200, this.users);
   };
 
   getUser = (req: IncomingMessage, res: ServerResponse, id: string) => {
-    res.write(JSON.stringify(id));
+    if (!id.match(IDRegExp)) {
+      responseHandler(res, 400, { message: ErrorMessages.INVALID_ID });
+    } else {
+      const user = this.users.find((item) => item.id === id);
+      if (!user) {
+        responseHandler(res, 404, { message: ErrorMessages.NOT_USER });
+      } else {
+        responseHandler(res, 200, user);
+      }
+    }
     res.end();
   };
 
   post = async (req: IncomingMessage, res: ServerResponse) => {
     try {
       const body = await getDataFormPOSTRequest(req);
-      const { name, age } = body;
+      const { name, age, hobbies } = body;
 
-      if (!name || !age) {
-        responseHandler(res, 400, JSON.stringify({ message: ErrorMessages.INVALID_BODY }));
-      } else if (!Number.isInteger(age) || typeof name !== 'string') {
-        responseHandler(res, 400, JSON.stringify({ message: ErrorMessages.INVALID_BODY_TYPES }));
+      if (!name || !age || !hobbies) {
+        responseHandler(res, 400, { message: ErrorMessages.INVALID_BODY });
+      } else if (!Number.isInteger(age) || typeof name !== 'string' || !Array.isArray(hobbies)) {
+        responseHandler(res, 400, { message: ErrorMessages.INVALID_BODY_TYPES });
       } else {
-        responseHandler(res, 201, JSON.stringify({ name, age }));
+        const newUser = {
+          id: randomUUID(),
+          name,
+          age,
+          hobbies,
+        };
+        this.users.push(newUser);
+        responseHandler(res, 201, JSON.stringify(newUser));
       }
     } catch (err) {
       console.log('error', err);
+    }
+  };
+
+  put = async (req: IncomingMessage, res: ServerResponse, id: string) => {
+    try {
+      if (!id.match(IDRegExp)) {
+        responseHandler(res, 400, { message: ErrorMessages.INVALID_ID });
+      } else {
+        const user = this.users.find((item) => item.id === id);
+        if (!user) {
+          responseHandler(res, 404, { message: ErrorMessages.NOT_USER });
+        } else {
+          const body = await getDataFormPOSTRequest(req);
+          const { name, age, hobbies } = body;
+          if (!name || !age || !hobbies) {
+            responseHandler(res, 400, { message: ErrorMessages.INVALID_BODY });
+          } else if (!Number.isInteger(age) || typeof name !== 'string' || !Array.isArray(hobbies)) {
+            responseHandler(res, 400, { message: ErrorMessages.INVALID_BODY_TYPES });
+          } else {
+            this.users = this.users.map((user) => {
+              if (user.id === id) {
+                return {
+                  ...user,
+                  name,
+                  age,
+                  hobbies,
+                };
+              }
+              return user;
+            });
+            responseHandler(res, 201, body);
+          }
+        }
+      }
+    } catch (err) {
+      console.log('err', err);
+    }
+  };
+
+  delete = async (req: IncomingMessage, res: ServerResponse, id: string) => {
+    try {
+      if (!id.match(IDRegExp)) {
+        responseHandler(res, 400, { message: ErrorMessages.INVALID_ID });
+      } else {
+        const userIndex = this.users.findIndex((item) => item.id === id);
+        if (userIndex === -1) {
+          responseHandler(res, 404, { message: ErrorMessages.NOT_USER });
+        } else {
+          const body = await getDataFormPOSTRequest(req);
+          this.users.splice(userIndex, 1);
+          responseHandler(res, 204, body);
+        }
+      }
+    } catch (err) {
+      console.log('err', err);
     }
   };
 }

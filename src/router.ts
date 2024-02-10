@@ -7,8 +7,6 @@ export const router = async (req: IncomingMessage, res: ServerResponse) => {
   if (req.url?.startsWith('/api')) {
     const [_, basePath, route, id] = req.url.split('/');
 
-    console.log(basePath, route, id);
-
     if (req.method === 'GET') {
       switch (route) {
         case 'users':
@@ -21,29 +19,26 @@ export const router = async (req: IncomingMessage, res: ServerResponse) => {
         default:
           responseHandler(res, 404, ErrorMessages.NOT_ROUTE);
       }
+      return;
     }
 
-    if (req.method === 'POST') {
+    if (req.method === 'POST' && !id) {
       await userController.post(req, res);
+      return;
     }
+
+    if (req.method === 'PUT' && id) {
+      await userController.put(req, res, id);
+      return;
+    }
+
+    if (req.method === 'DELETE' && id) {
+      await userController.delete(req, res, id);
+      return;
+    }
+
+    responseHandler(res, 404, ErrorMessages.NOT_ROUTE);
+  } else {
+    responseHandler(res, 404, ErrorMessages.NOT_ROUTE);
   }
 };
-//   if (req.method === "GET") {
-//     console.log(req.url);
-//     // res.statusCode = 201;
-//     // res.setHeader("IlyaName", "Kotsur");
-//     // res.write(
-//     //   JSON.stringify({
-//     //     name: "Ilya",
-//     //   })
-//     // );
-//     // res.end();
-//   }
-//   if (req.method === "POST") {
-//     res.write(
-//       JSON.stringify({
-//         name: "IlyaPOST",
-//       })
-//     );
-//     res.end();
-//   }
