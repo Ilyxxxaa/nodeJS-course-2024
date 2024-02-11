@@ -1,17 +1,25 @@
-import os from 'os';
 import http from 'http';
 import { router } from './src/router';
 
-// import dotenv from "dotenv";
+// import dotenv from 'dotenv';
 // dotenv.config();
 
-console.log(os.homedir());
-console.log(process.env.NAME);
+const PORT = process.env.PORT || 5000;
+const HOST: string = process.env.HOST || 'localhost';
+const pid = process.pid;
 
-const server = http.createServer(router).listen(4500, () => {
-  console.log('server is runnning');
+const server = http.createServer(router).listen(PORT, () => {
+  console.log(`Server is running on ${HOST}:${PORT}. PID: ${pid}`);
 });
 
-server.on('request', () => {
-  console.log('request');
+process.on('SIGINT', () => {
+  server.close(() => {
+    process.exit(0);
+  });
+});
+
+process.on('exit', () => {
+  server.close(() => {
+    process.exit(0);
+  });
 });

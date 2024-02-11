@@ -5,6 +5,7 @@ import { User } from '../types';
 import { responseHandler } from '../utils/responseHandler';
 import { ErrorMessages, IDRegExp } from '../constants';
 import { randomUUID } from 'crypto';
+import cluster from 'cluster';
 
 class UserController {
   users: User[];
@@ -12,6 +13,10 @@ class UserController {
   constructor() {
     this.users = [];
   }
+
+  setUsers = (newUsers: User[]) => {
+    this.users = newUsers;
+  };
 
   getUsers = (req: IncomingMessage, res: ServerResponse) => {
     responseHandler(res, 200, this.users);
@@ -48,6 +53,9 @@ class UserController {
           hobbies,
         };
         this.users.push(newUser);
+        if (cluster.isWorker) {
+          process.send && process.send(JSON.stringify(this.users));
+        }
         responseHandler(res, 201, JSON.stringify(newUser));
       }
     } catch (err) {
@@ -82,6 +90,9 @@ class UserController {
               }
               return user;
             });
+            if (cluster.isWorker) {
+              process.send && process.send(JSON.stringify(this.users));
+            }
             responseHandler(res, 201, body);
           }
         }
@@ -102,6 +113,9 @@ class UserController {
         } else {
           const body = await getDataFormPOSTRequest(req);
           this.users.splice(userIndex, 1);
+          if (cluster.isWorker) {
+            process.send && process.send(JSON.stringify(this.users));
+          }
           responseHandler(res, 204, body);
         }
       }
