@@ -4,6 +4,7 @@ import http from 'http';
 import 'dotenv/config.js';
 import { getDataFormPOSTRequest } from '../utils/getDataFromPOSTRequest';
 import { router } from '../router';
+import { ErrorMessages } from '../constants';
 
 const PORT = +process.env.PORT! || 4000;
 
@@ -25,7 +26,7 @@ if (cluster.isPrimary) {
 
   workers.forEach((w) => {
     w.on('message', (message) => {
-      workers.forEach((w) => w.send(JSON.stringify(message)));
+      workers.forEach((w) => w.send(message));
     });
   });
 
@@ -49,12 +50,15 @@ if (cluster.isPrimary) {
     const request = http.request(options, async (response) => {
       response.setEncoding('utf-8');
       res.statusCode = response.statusCode!;
+
+      response.on('data', (chunk) => {
+        console.log('data response');
+        res.end(chunk);
+      });
+
       if (response.statusCode === 204) {
         res.end();
       }
-      response.on('data', (chunk) => {
-        res.end(chunk);
-      });
     });
 
     if (req.method !== 'GET') {

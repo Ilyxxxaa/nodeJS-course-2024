@@ -1,10 +1,10 @@
 import http from 'http';
 import { router } from './src/router';
 
-// import dotenv from 'dotenv';
-// dotenv.config();
+import dotenv from 'dotenv';
+dotenv.config();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 const HOST: string = process.env.HOST || 'localhost';
 const pid = process.pid;
 

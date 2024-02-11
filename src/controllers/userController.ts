@@ -56,7 +56,7 @@ class UserController {
         if (cluster.isWorker) {
           process.send && process.send(JSON.stringify(this.users));
         }
-        responseHandler(res, 201, JSON.stringify(newUser));
+        responseHandler(res, 201, newUser);
       }
     } catch (err) {
       console.log('error', err);
@@ -68,8 +68,8 @@ class UserController {
       if (!id.match(IDRegExp)) {
         responseHandler(res, 400, { message: ErrorMessages.INVALID_ID });
       } else {
-        const user = this.users.find((item) => item.id === id);
-        if (!user) {
+        const userIndex = this.users.findIndex((item) => item.id === id);
+        if (userIndex === -1) {
           responseHandler(res, 404, { message: ErrorMessages.NOT_USER });
         } else {
           const body = await getDataFormPOSTRequest(req);
@@ -93,7 +93,7 @@ class UserController {
             if (cluster.isWorker) {
               process.send && process.send(JSON.stringify(this.users));
             }
-            responseHandler(res, 201, body);
+            responseHandler(res, 201, { name, age, hobbies, id });
           }
         }
       }
@@ -116,7 +116,7 @@ class UserController {
           if (cluster.isWorker) {
             process.send && process.send(JSON.stringify(this.users));
           }
-          responseHandler(res, 204, body);
+          responseHandler(res, 204, '');
         }
       }
     } catch (err) {
