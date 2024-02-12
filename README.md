@@ -60,7 +60,8 @@ npm run test
 
 Test coverage
 
-![image]()
+<img width="438" alt="image" src="https://github.com/Ilyxxxaa/nodeJS-course-2024/assets/99085805/9256ba7d-565f-49c9-8c5d-24eda9ebbf30">
+
 
 ## Endpoints
 
