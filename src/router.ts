@@ -38,11 +38,11 @@ export const router = async (req: IncomingMessage, res: ServerResponse) => {
         return;
       }
 
-      responseHandler(res, 404, ErrorMessages.NOT_ROUTE);
+      responseHandler(res, 404, { message: ErrorMessages.NOT_ROUTE });
     } else {
-      responseHandler(res, 404, ErrorMessages.NOT_ROUTE);
+      responseHandler(res, 404, { message: ErrorMessages.NOT_ROUTE });
     }
   } catch {
-    responseHandler(res, 500, ErrorMessages.SOMETHING_WRONG);
+    responseHandler(res, 500, { message: ErrorMessages.SOMETHING_WRONG });
   }
 };

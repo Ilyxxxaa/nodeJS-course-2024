@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 4000;
 const HOST: string = process.env.HOST || 'localhost';
 const pid = process.pid;
 
-const server = http.createServer(router).listen(PORT, () => {
+export const server = http.createServer(router).listen(PORT, () => {
   console.log(`Server is running on ${HOST}:${PORT}. PID: ${pid}`);
 });
 

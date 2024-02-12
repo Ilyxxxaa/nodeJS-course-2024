@@ -39,16 +39,16 @@ class UserController {
   post = async (req: IncomingMessage, res: ServerResponse) => {
     try {
       const body = await getDataFormPOSTRequest(req);
-      const { name, age, hobbies } = body;
+      const { username, age, hobbies } = body;
 
-      if (!name || !age || !hobbies) {
+      if (!username || !age || !hobbies) {
         responseHandler(res, 400, { message: ErrorMessages.INVALID_BODY });
-      } else if (!Number.isInteger(age) || typeof name !== 'string' || !Array.isArray(hobbies)) {
+      } else if (!Number.isInteger(age) || typeof username !== 'string' || !Array.isArray(hobbies)) {
         responseHandler(res, 400, { message: ErrorMessages.INVALID_BODY_TYPES });
       } else {
         const newUser = {
           id: randomUUID(),
-          name,
+          username,
           age,
           hobbies,
         };
@@ -73,17 +73,17 @@ class UserController {
           responseHandler(res, 404, { message: ErrorMessages.NOT_USER });
         } else {
           const body = await getDataFormPOSTRequest(req);
-          const { name, age, hobbies } = body;
-          if (!name || !age || !hobbies) {
+          const { username, age, hobbies } = body;
+          if (!username || !age || !hobbies) {
             responseHandler(res, 400, { message: ErrorMessages.INVALID_BODY });
-          } else if (!Number.isInteger(age) || typeof name !== 'string' || !Array.isArray(hobbies)) {
+          } else if (!Number.isInteger(age) || typeof username !== 'string' || !Array.isArray(hobbies)) {
             responseHandler(res, 400, { message: ErrorMessages.INVALID_BODY_TYPES });
           } else {
             this.users = this.users.map((user) => {
               if (user.id === id) {
                 return {
                   ...user,
-                  name,
+                  username,
                   age,
                   hobbies,
                 };
@@ -93,7 +93,7 @@ class UserController {
             if (cluster.isWorker) {
               process.send && process.send(JSON.stringify(this.users));
             }
-            responseHandler(res, 201, { name, age, hobbies, id });
+            responseHandler(res, 200, { username, age, hobbies, id });
           }
         }
       }

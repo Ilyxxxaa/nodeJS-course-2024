@@ -1,11 +1,8 @@
-import { ServerResponse } from "http";
+import { ServerResponse } from 'http';
 
-export const responseHandler = (
-  res: ServerResponse,
-  statusCode: number,
-  body: any
-) => {
-  res.writeHead(statusCode, "");
+export const responseHandler = (res: ServerResponse, statusCode: number, body: any) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.writeHead(statusCode, '');
   res.write(JSON.stringify(body));
   res.end();
 };
